@@ -11,4 +11,4 @@
 - Visual review of stack logic (push/pop/top/empty/size).
 - Full build will be completed after TODO sections in `main.cpp` are implemented.
 
-**Commit:** Day 1: project setup + ArrayStack implemented (hash TBD)
+**Commit:** 3d62c2c8 (Day 1: project setup + ArrayStack implemented), 2ca003e (Day 1: remove IDE files from repo)
