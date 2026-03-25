@@ -7,6 +7,7 @@
 #include "ArrayStack.h"
 
 using namespace std;
+static constexpr bool DEBUG_TOKENS = false;
 
 // Token
 
@@ -18,10 +19,36 @@ struct Token {
 
 vector<Token> tokenize(const string& line) {
     vector<Token> tokens;
-    // TODO
+
+    size_t i = 0;
+    while (i < line.size()) {
+        char c = line[i];
+
+        if (isspace(static_cast<unsigned char>(c))) {
+            ++i;
+            continue;
+        }
+
+        if (isdigit(static_cast<unsigned char>(c))) {
+            size_t j = i;
+            while (j < line.size() && isdigit(static_cast<unsigned char>(line[j]))) ++j;
+            tokens.push_back(Token{line.substr(i, j - i)});
+            i = j;
+            continue;
+        }
+
+        if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
+            tokens.push_back(Token{string(1, c)});
+            ++i;
+            continue;
+        }
+
+        tokens.push_back(Token{string(1, c)});
+        ++i;
+    }
+
     return tokens;
 }
-
 // Helpers
 
 bool isOperator(const string& s) {
@@ -68,6 +95,12 @@ int main() {
     getline(cin, line);
 
     vector<Token> tokens = tokenize(line);
+
+    if (DEBUG_TOKENS) {
+        cout << "TOKENS: ";
+        for (const auto& t : tokens) cout << "[" << t.value << "] ";
+        cout << "\n";
+    }
 
     if (isValidPostfix(tokens)) {
         cout << "FORMAT: POSTFIX\n";
