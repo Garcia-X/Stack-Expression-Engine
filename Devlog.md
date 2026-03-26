@@ -28,3 +28,17 @@
 - `3 4 2 * +`
 
 **Commit:** 82a3277 (Day 2: implement tokenizer + DEBUG_TOKENS)
+
+---
+
+## 2026-03-26
+**Work:** Postfix validator
+- Implemented `isValidPostfix()` using stack-depth simulation.
+- Rejects parentheses and invalid tokens.
+- Valid postfix must end with stack depth 1.
+
+**Testing:**
+- Valid: `3 4 +`, `3 4 2 * +`
+- Invalid: `3 + 4`, `3 4 + +`
+
+**Commit:** 483812b (Day3: implement Postfix validator)
