@@ -56,4 +56,4 @@
 - `3 4 +` → 7
 - `5 2 /` → 2.5
 
-**Commit:**      (Day 4: implement postfix evaluation)
+**Commit:** 1bfa1a5 (Day 4: implement postfix evaluation)
