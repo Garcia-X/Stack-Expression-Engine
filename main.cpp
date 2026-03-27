@@ -116,10 +116,50 @@ vector<Token> infixToPostfix(const vector<Token>& tokens) {
 
 double evalPostfix(const vector<Token>& tokens) {
     ArrayStack<double> stack;
-    // TODO
-    return 0.0;
-}
 
+    auto isNumberToken = [](const string& v) -> bool {
+        if (v.empty()) return false;
+        for (char ch : v) {
+            if (!isdigit(static_cast<unsigned char>(ch))) return false;
+        }
+        return true;
+    };
+
+    for (const auto& t : tokens) {
+        const string& v = t.value;
+
+        if (isNumberToken(v)) {
+            stack.push(static_cast<double>(stoll(v)));
+            continue;
+        }
+
+        if (isOperator(v)) {
+            if (stack.size() < 2) {
+                throw runtime_error("invalid postfix expression");
+            }
+
+            double b = stack.top();
+            stack.pop();
+            double a = stack.top();
+            stack.pop();
+
+            if (v == "+") stack.push(a + b);
+            else if (v == "-") stack.push(a - b);
+            else if (v == "*") stack.push(a * b);
+            else if (v == "/") stack.push(a / b);
+
+            continue;
+        }
+
+        throw runtime_error("invalid token in postfix");
+    }
+
+    if (stack.size() != 1) {
+        throw runtime_error("invalid postfix expression");
+    }
+
+    return stack.top();
+}
 // Main
 
 int main() {

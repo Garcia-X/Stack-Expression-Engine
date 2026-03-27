@@ -41,4 +41,19 @@
 - Valid: `3 4 +`, `3 4 2 * +`
 - Invalid: `3 + 4`, `3 4 + +`
 
-**Commit:** 483812b (Day3: implement Postfix validator)
+**Commit:** 483812b (Day 3: implement Postfix validator)
+
+---
+
+## 2026-03-27
+**Work:** Postfix evaluation
+- Implemented `evalPostfix()` using `ArrayStack<double>`.
+- Supports operators: +, -, *, / with double division.
+- Validates operand availability and final stack size.
+
+**Testing:**
+- `3 4 2 * +` → 11
+- `3 4 +` → 7
+- `5 2 /` → 2.5
+
+**Commit:**      (Day 4: implement postfix evaluation)
