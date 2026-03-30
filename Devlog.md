@@ -71,4 +71,19 @@
 - `(3 + 4) * 2` → postfix `3 4 + 2 *`, result 14
 - `3 + * 4` → NEITHER
 
-**Commit:** (Day 5+6: validate infix + convert to postfix)
+**Commit:** (Day 5+6: validate infix + convert to postfix) 
+
+---
+
+## 2026-03-30
+**Work:** Final polish
+- Added result formatting to avoid excessive trailing zeros.
+- Hardened runtime error handling so invalid expressions print NEITHER instead of crashing.
+- Final cleanup for submission-ready behavior.
+
+**Testing:**
+- Verified INFIX → POSTFIX conversion and evaluation.
+- Verified POSTFIX evaluation including double division.
+- Verified invalid inputs print NEITHER.
+
+**Commit:** (Day 7: finalize formatting + error handling)

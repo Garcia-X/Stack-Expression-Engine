@@ -1,6 +1,9 @@
 // main.cpp
 #include <cctype>
+#include <cmath>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -10,14 +13,21 @@ using namespace std;
 
 static constexpr bool DEBUG_TOKENS = false;
 
-// Token
-
 struct Token {
     string value;  // number, operator, or parenthesis
 };
 
-// Tokenizer
+static bool isOperator(const string& s) { return s == "+" || s == "-" || s == "*" || s == "/"; }
 
+static bool isNumberToken(const string& v) {
+    if (v.empty()) return false;
+    for (char ch : v) {
+        if (!isdigit(static_cast<unsigned char>(ch))) return false;
+    }
+    return true;
+}
+
+// Tokenizer
 vector<Token> tokenize(const string& line) {
     vector<Token> tokens;
 
@@ -44,7 +54,7 @@ vector<Token> tokenize(const string& line) {
             continue;
         }
 
-        // Invalid character => leave it as a token so later validation rejects it.
+        // Invalid character => leave as token so validators reject later
         tokens.push_back(Token{string(1, c)});
         ++i;
     }
@@ -53,17 +63,6 @@ vector<Token> tokenize(const string& line) {
 }
 
 // Helpers
-
-bool isOperator(const string& s) { return s == "+" || s == "-" || s == "*" || s == "/"; }
-
-static bool isNumberToken(const string& v) {
-    if (v.empty()) return false;
-    for (char ch : v) {
-        if (!isdigit(static_cast<unsigned char>(ch))) return false;
-    }
-    return true;
-}
-
 int precedence(const string& op) {
     if (op == "*" || op == "/") return 2;
     if (op == "+" || op == "-") return 1;
@@ -71,7 +70,6 @@ int precedence(const string& op) {
 }
 
 // Detection
-
 bool isValidPostfix(const vector<Token>& tokens) {
     if (tokens.empty()) return false;
 
@@ -91,7 +89,7 @@ bool isValidPostfix(const vector<Token>& tokens) {
 
         if (isOperator(v)) {
             if (depth < 2) return false;
-            --depth;  // consumes 2 operands, produces 1 result
+            --depth;
             continue;
         }
 
@@ -134,7 +132,6 @@ bool isValidInfix(const vector<Token>& tokens) {
 }
 
 // Conversion
-
 vector<Token> infixToPostfix(const vector<Token>& tokens) {
     vector<Token> output;
     ArrayStack<Token> ops;
@@ -151,9 +148,7 @@ vector<Token> infixToPostfix(const vector<Token>& tokens) {
                 output.push_back(ops.top());
                 ops.pop();
             }
-            if (!ops.empty() && ops.top().value == "(") {
-                ops.pop();  // discard '('
-            }
+            if (!ops.empty() && ops.top().value == "(") ops.pop();
         } else if (isOperator(v)) {
             while (!ops.empty() && isOperator(ops.top().value) &&
                    precedence(ops.top().value) >= precedence(v)) {
@@ -173,7 +168,6 @@ vector<Token> infixToPostfix(const vector<Token>& tokens) {
 }
 
 // Evaluation
-
 double evalPostfix(const vector<Token>& tokens) {
     ArrayStack<double> stack;
 
@@ -208,7 +202,27 @@ double evalPostfix(const vector<Token>& tokens) {
     return stack.top();
 }
 
-// Main
+static string formatDouble(double x) {
+    if (std::isfinite(x)) {
+        double rx = std::round(x);
+        if (std::fabs(x - rx) < 1e-12) {
+            return std::to_string(static_cast<long long>(rx));
+        }
+    }
+
+    ostringstream oss;
+    oss << setprecision(15) << x;
+    string s = oss.str();
+
+    if (s.find('e') == string::npos && s.find('E') == string::npos) {
+        if (s.find('.') != string::npos) {
+            while (!s.empty() && s.back() == '0') s.pop_back();
+            if (!s.empty() && s.back() == '.') s.pop_back();
+        }
+    }
+
+    return s.empty() ? "0" : s;
+}
 
 int main() {
     string line;
@@ -225,14 +239,14 @@ int main() {
     try {
         if (isValidPostfix(tokens)) {
             cout << "FORMAT: POSTFIX\n";
-            cout << "RESULT: " << evalPostfix(tokens) << "\n";
+            cout << "RESULT: " << formatDouble(evalPostfix(tokens)) << "\n";
         } else if (isValidInfix(tokens)) {
             vector<Token> postfix = infixToPostfix(tokens);
             cout << "FORMAT: INFIX\n";
             cout << "POSTFIX: ";
             for (const auto& t : postfix) cout << t.value << " ";
             cout << "\n";
-            cout << "RESULT: " << evalPostfix(postfix) << "\n";
+            cout << "RESULT: " << formatDouble(evalPostfix(postfix)) << "\n";
         } else {
             cout << "FORMAT: NEITHER\n";
             cout << "ERROR: invalid expression\n";
